@@ -1,8 +1,8 @@
-/target/
-/logs/
+HELP.md
+target/
 !.mvn/wrapper/maven-wrapper.jar
-.mvn/
-/src/main/resources/application-local.properties
+!**/src/main/**/target/
+!**/src/test/**/target/
 
 ### STS ###
 .apt_generated
@@ -21,13 +21,13 @@
 
 ### NetBeans ###
 /nbproject/private/
-/build/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
 
-
-# In the Apple macOS operating system,
-# .DS_Store is a file that stores custom attributes of its containing folder
-.DS_Store
+### VS Code ###
+.vscode/
