@@ -1,6 +1,8 @@
 package com.saz.se.goat.utils;
 
 import com.saz.se.goat.model.APIError;
+import com.saz.se.goat.model.ErrorModel;
+import com.saz.se.goat.model.ResponseWrapper;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
@@ -102,7 +104,9 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     protected ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException ex, WebRequest request) {
         APIError apiError = new APIError("Email not found", HttpStatus.UNAUTHORIZED, ex.getMessage(), request);
-        return handleExceptionInternal(ex, apiError, new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
+        ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
+        responseWrapper.addError(new ErrorModel("1111", ex.getMessage()));
+        return handleExceptionInternal(ex, responseWrapper, new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
     }
     // Handle entity not found exceptions
     @ExceptionHandler(EntityNotFoundException.class)

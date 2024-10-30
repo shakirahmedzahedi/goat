@@ -5,8 +5,10 @@ import com.saz.se.goat.model.ResponseWrapper;
 import com.saz.se.goat.requestModel.SignInRequest;
 import com.saz.se.goat.requestModel.SignUpRequest;
 import com.saz.se.goat.response.UserResponse;
+import com.saz.se.goat.user.UserDTO;
 import com.saz.se.goat.user.UserEntity;
 import com.saz.se.goat.user.UserRepository;
+import com.saz.se.goat.utils.CommonDTO;
 import com.saz.se.goat.utils.EmailService;
 import com.saz.se.goat.utils.JWTService;
 import io.jsonwebtoken.JwtException;
@@ -14,7 +16,10 @@ import jakarta.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -33,6 +38,7 @@ public class AuthenticationService {
     private UserRepository userRepository;
     @Autowired
     private EmailService emailService;
+    CommonDTO commonDTO = new CommonDTO();
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
@@ -113,20 +119,26 @@ public class AuthenticationService {
         return  response;
     }
 
-    public ResponseWrapper<UserResponse> signIn(SignInRequest request) {
-        ResponseWrapper<UserResponse> response = new ResponseWrapper<>();
-        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-        UserEntity user = userRepository.findByEmail(request.getEmail()).orElse(null);
-
-        if (authentication.isAuthenticated() && user.isActive())
+    public UserDTO signIn(SignInRequest request)
+    {
+        try
         {
-            UserResponse userResponse = parseUser(user);
-            response.setData(userResponse);
-        } else {
-            response.addError(new ErrorModel("14464", "Authentication fail"));
+            Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+            UserEntity user = userRepository.findByEmail(request.getEmail()).orElse(null);
+            if (authentication.isAuthenticated() && user.isActive())
+            {
+                return commonDTO.toUserDTO(user);
+
+            }
+
+        } catch (BadCredentialsException e) {
+            // Handle invalid credentials
+             ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+
         }
 
-        return  response;
+
+        return  null;
     }
 
     public static UserResponse parseUser (UserEntity req)

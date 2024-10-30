@@ -1,8 +1,10 @@
 package com.saz.se.goat.auth;
 
+import com.saz.se.goat.model.ErrorModel;
 import com.saz.se.goat.model.ResponseWrapper;
 import com.saz.se.goat.requestModel.SignInRequest;
 import com.saz.se.goat.requestModel.SignUpRequest;
+import com.saz.se.goat.user.UserDTO;
 import com.saz.se.goat.utils.JsonUtils;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +34,19 @@ public class AuthenticationController {
 
     @CrossOrigin
     @PostMapping("/signin")
-    public ResponseEntity<?> signin(@RequestBody SignInRequest request, @RequestHeader HttpHeaders header) {
+    public ResponseEntity<?> signin(@RequestBody SignInRequest request, @RequestHeader HttpHeaders header)
+    {
+        ResponseWrapper<UserDTO> response = new ResponseWrapper<>();
+        UserDTO userDTO = authenticationService.signIn(request);
 
-        ResponseWrapper response = authenticationService.signIn(request);
+        if (userDTO != null)
+        {
+            response.setData(userDTO);
+        }
+        else
+        {
+            response.addError(new ErrorModel("14464", "Authentication fail"));
+        }
         return jsonUtils.responseAsJsonWithToken(response,request.getEmail());
     }
 

@@ -47,7 +47,7 @@ public class OrderEntity {
     @NotNull(message = "OrderStatus is required")
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "discount_coupon_id")
     private DiscountCouponEntity discountCoupon;
     @Column(nullable = false)

@@ -57,6 +57,7 @@ public class OrderService
 
         orderRepository.save(order);
         user.getOrderEntityList().add(order);
+        user.setInitialDiscount(false);
         cart.setActive(false);
         cartRepository.save(cart);
         userRepository.save(user);

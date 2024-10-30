@@ -65,7 +65,7 @@ public class UserEntity
         }
 
         this.active = false;
-        this.initialDiscount = false;
+        this.initialDiscount = true;
         this.address = address;
         this.cartEntityList = new ArrayList<>();
         this.orderEntityList = new ArrayList<>();

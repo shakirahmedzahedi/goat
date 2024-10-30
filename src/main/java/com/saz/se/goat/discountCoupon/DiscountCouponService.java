@@ -17,7 +17,7 @@ public class DiscountCouponService
 
     @Autowired
     DiscountCouponRepository discountCouponRepository;
-    CommonDTO commonDTO;
+    CommonDTO commonDTO = new CommonDTO();
 
 
     public DiscountCouponDTO getCoupon(String couponNumber)

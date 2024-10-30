@@ -1,6 +1,7 @@
 package com.saz.se.goat.discountCoupon;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.saz.se.goat.order.OrderEntity;
 import com.saz.se.goat.user.UserEntity;
 import com.saz.se.goat.utils.GoatUtils;
 import jakarta.persistence.*;
@@ -23,6 +24,8 @@ public class DiscountCouponEntity
     private String number;
     @Column(nullable = false)
     private long discountAmmount;
+    @OneToOne(fetch = FetchType.EAGER,mappedBy = "discountCoupon", cascade = CascadeType.ALL)
+    private OrderEntity orderEntity;
     private boolean alreadyUsed;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(updatable = false)
