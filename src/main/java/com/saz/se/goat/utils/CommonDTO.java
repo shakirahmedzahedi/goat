@@ -19,12 +19,15 @@ import java.util.stream.Collectors;
 
 public class CommonDTO {
     public UserDTO toUserDTO(UserEntity userEntity) {
-        AddressDTO addressDTO = new AddressDTO(
-                userEntity.getAddress().getApartmentNo(),
-                userEntity.getAddress().getHouseNo(),
-                userEntity.getAddress().getPostCode(),
-                userEntity.getAddress().getPostOffice(),
-                userEntity.getAddress().getCity());
+        AddressDTO addressDTO = null;
+        if (userEntity.getAddress() != null) {
+            addressDTO = new AddressDTO(
+                    userEntity.getAddress().getApartmentNo(),
+                    userEntity.getAddress().getHouseNo(),
+                    userEntity.getAddress().getPostCode(),
+                    userEntity.getAddress().getPostOffice(),
+                    userEntity.getAddress().getCity());
+        }
 
 
 
@@ -98,31 +101,41 @@ public class CommonDTO {
 
     public CartDTO toCartDTO(CartEntity cartEntity)
     {
-        AddressDTO addressDTO = new AddressDTO (
-                cartEntity.getUserEntity().getAddress().getApartmentNo(),
-                cartEntity.getUserEntity().getAddress().getHouseNo(),
-                cartEntity.getUserEntity().getAddress().getPostCode(),
-                cartEntity.getUserEntity().getAddress().getPostOffice(),
-                cartEntity.getUserEntity().getAddress().getCity());
+        if (cartEntity != null) {
+            AddressDTO addressDTO = null;
 
-        UserDTO userDTO = new UserDTO (
-                cartEntity.getUserEntity().getId(),
-                cartEntity.getUserEntity().getFirstName(),
-                cartEntity.getUserEntity().getLastName(),
-                cartEntity.getUserEntity().getEmail(),
-                cartEntity.getUserEntity().getPhoneNo(),
-                cartEntity.getUserEntity().getRoles(),
-                cartEntity.getUserEntity().isActive(),
-                cartEntity.getUserEntity().isInitialDiscount(),
-                addressDTO);
+            if (cartEntity.getUserEntity().getAddress() != null){
+                addressDTO = new AddressDTO(
+                        cartEntity.getUserEntity().getAddress().getApartmentNo(),
+                        cartEntity.getUserEntity().getAddress().getHouseNo(),
+                        cartEntity.getUserEntity().getAddress().getPostCode(),
+                        cartEntity.getUserEntity().getAddress().getPostOffice(),
+                        cartEntity.getUserEntity().getAddress().getCity());
+        }
 
-        return new CartDTO(
-                cartEntity.getId(),
-                cartEntity.getArticles().stream()
-                        .map(this::toArticleDTO)
-                        .collect(Collectors.toList()),
-                userDTO,
-                cartEntity.isActive());
+            UserDTO userDTO = new UserDTO (
+                    cartEntity.getUserEntity().getId(),
+                    cartEntity.getUserEntity().getFirstName(),
+                    cartEntity.getUserEntity().getLastName(),
+                    cartEntity.getUserEntity().getEmail(),
+                    cartEntity.getUserEntity().getPhoneNo(),
+                    cartEntity.getUserEntity().getRoles(),
+                    cartEntity.getUserEntity().isActive(),
+                    cartEntity.getUserEntity().isInitialDiscount(),
+                    addressDTO);
+
+            return new CartDTO(
+                    cartEntity.getId(),
+                    cartEntity.getArticles().stream()
+                            .map(this::toArticleDTO)
+                            .collect(Collectors.toList()),
+                    userDTO,
+                    cartEntity.isActive());
+        }
+        else
+        {
+            return null;
+        }
     }
 
     public OrderDTO toOrderDTO(OrderEntity orderEntity)

@@ -18,7 +18,8 @@ public class HeaderProperties extends Properties {
     public void init(HttpHeaders headers)
     {
         this.putAll(headers);
-        //this.email = getHeaders(headers, "email", "");
+        this.email = headers.getFirst("email");
+
     }
 
 

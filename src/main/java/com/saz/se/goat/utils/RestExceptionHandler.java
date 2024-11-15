@@ -115,12 +115,20 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, apiError, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
 
-    @ExceptionHandler(SignatureException.class)
+    /*@ExceptionHandler(SignatureException.class)
     protected ResponseEntity<Object> handleSignatureException(SignatureException ex, WebRequest request) {
         APIError apiError = new APIError("Invalid or expired JWT token", HttpStatus.UNAUTHORIZED, ex.getMessage(), request);
         return handleExceptionInternal(ex, apiError, new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
-    }
+    }*/
 
+    @ExceptionHandler(SignatureException.class)
+    public ResponseEntity<String> handleSignatureException(SignatureException ex) {
+        // Log the exception for debugging
+        System.out.println("Invalid JWT signature: " + ex.getMessage());
+
+        // Return a custom error response to the client
+        return new ResponseEntity<>("Invalid JWT signature", HttpStatus.UNAUTHORIZED);
+    }
     // Handle JWT exceptions for invalid or expired tokens
     @ExceptionHandler(JwtException.class)
     protected ResponseEntity<Object> handleJwtException(JwtException ex, WebRequest request) {

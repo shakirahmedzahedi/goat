@@ -33,6 +33,6 @@ public class DiscountCouponController
         DiscountCouponDTO discountCouponDTO = discountCouponService.getCoupon(couponNumber);
         response.setData(discountCouponDTO);
 
-        return jsonUtils.responseAsJson(response);
+        return jsonUtils.responseAsJsonWithToken(response, headerProperties.getEmail());
     }
 }

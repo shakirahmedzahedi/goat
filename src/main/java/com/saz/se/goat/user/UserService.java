@@ -3,6 +3,7 @@ package com.saz.se.goat.user;
 import com.saz.se.goat.article.ArticleEntity;
 import com.saz.se.goat.article.ArticleRepository;
 import com.saz.se.goat.article.ArticleRequest;
+import com.saz.se.goat.cart.CartDTO;
 import com.saz.se.goat.cart.CartEntity;
 import com.saz.se.goat.cart.CartRepository;
 import com.saz.se.goat.model.*;
@@ -20,10 +21,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.saz.se.goat.auth.AuthenticationService.parseUser;
@@ -91,7 +89,7 @@ public class UserService {
     }*/
 
     @Transactional
-    public Optional<UserDTO> addToCart( ArticleRequest request)
+    public Optional<CartDTO> addToCart(ArticleRequest request)
     {
         UserEntity user = repo.findById(request.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
@@ -99,39 +97,142 @@ public class UserService {
         ProductEntity product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
-        // Check if the user has an active cart
-        CartEntity cart = cartRepository.findActiveCartByUserId(user.getId()).orElseGet(() -> {
-            // Create a new cart if no active cart exists
+
+        CartEntity cart = cartRepository.findActiveCartByUserId(user.getId()).orElseGet(() ->
+        {
             CartEntity newCart = new CartEntity(new ArrayList<>(),user);
             user.addCartToUser(newCart);
             user.getCartEntityList().add(newCart);
-            cartRepository.save(newCart); // Save the new cart
-            repo.save(user); // Save the user to persist the new cart association
+            cartRepository.save(newCart);
+            repo.save(user);
             return newCart;
         });
 
-        // Check if the cart already contains an article for the product
+
         Optional<ArticleEntity> existingArticleOpt = cart.getArticles().stream()
                 .filter(article -> article.getProduct().getId() == product.getId())
                 .findFirst();
 
         if (existingArticleOpt.isPresent())
         {
-            // If article exists, update the unit count
             ArticleEntity existingArticle = existingArticleOpt.get();
             existingArticle.setUnit(existingArticle.getUnit() + request.getUnit());
-            articleRepository.save(existingArticle); // Save the updated article
+            articleRepository.save(existingArticle);
+
         }
         else
         {
-            // If article does not exist, create a new one and add it to the cart
             ArticleEntity newArticle = new ArticleEntity(product, request.getUnit());
             cart.addArticle(newArticle);
-            articleRepository.save(newArticle); // Save the new article
-            cartRepository.save(cart); // Save the cart to persist the new article association
+            articleRepository.save(newArticle);
+            cartRepository.save(cart);
         }
 
+        product.setStock(product.getStock() - 1);
+        productRepository.save(product);
 
-        return Optional.ofNullable(commonDTO.toUserDTO(user));
+        return Optional.of(commonDTO.toCartDTO(cart));
+    }
+
+    @Transactional
+    public Optional<CartDTO> removeFromCart(ArticleRequest request)
+    {
+
+        UserEntity user = repo.findById(request.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+
+        ProductEntity product = productRepository.findById(request.getProductId())
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+
+
+        CartEntity cart = cartRepository.findActiveCartByUserId(user.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Cart not found"));
+
+
+        Optional<ArticleEntity> existingArticleOpt = cart.getArticles().stream()
+                .filter(article -> article.getProduct().getId() == product.getId())
+                .findFirst();
+
+        if (existingArticleOpt.isPresent())
+        {
+            ArticleEntity existingArticle = existingArticleOpt.get();
+
+            if (existingArticle.getUnit() > 1)
+            {
+                existingArticle.setUnit(existingArticle.getUnit() - 1);
+                articleRepository.save(existingArticle);
+            }
+            else
+            {
+                cart.getArticles().remove(existingArticle);
+                articleRepository.delete(existingArticle);
+                cartRepository.save(cart);
+            }
+
+            product.setStock(product.getStock() + 1);
+            productRepository.save(product);
+
+        }
+        else
+        {
+            throw new EntityNotFoundException("Product not found in the cart");
+        }
+
+        // Return the updated user DTO
+        return Optional.of(commonDTO.toCartDTO(cart));
+    }
+
+    public Optional<CartDTO> deleteArticle(ArticleRequest request) {
+        UserEntity user = repo.findById(request.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        ProductEntity product = productRepository.findById(request.getProductId())
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+
+        CartEntity cart = cartRepository.findActiveCartByUserId(user.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Cart not found"));
+
+        Optional<ArticleEntity> existingArticleOpt = cart.getArticles().stream()
+                .filter(article -> article.getProduct().getId() == product.getId())
+                .findFirst();
+
+        if (existingArticleOpt.isPresent())
+        {
+            ArticleEntity existingArticle = existingArticleOpt.get();
+            cart.getArticles().remove(existingArticle);
+            articleRepository.delete(existingArticle);
+            cartRepository.save(cart);
+            product.setStock(product.getStock() + request.getUnit());
+            productRepository.save(product);
+        }
+        else
+        {
+            throw new EntityNotFoundException("Product not found in the cart");
+        }
+
+        if (cart.getArticles().size() < 1)
+        {
+            user.getCartEntityList().remove(cart);
+            cartRepository.delete(cart);
+            repo.save(user);
+            cart = cartRepository.findActiveCartByUserId(request.getUserId()).orElse(null);
+        }
+
+        return Optional.ofNullable(commonDTO.toCartDTO(cart));
+    }
+
+
+
+    public Optional<CartDTO> feachActiveCartsByUser(long userId)
+    {
+        UserEntity user = repo.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        CartEntity cart = cartRepository.findActiveCartByUserId(user.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Cart not found"));
+
+        return Optional.ofNullable(commonDTO.toCartDTO(cart));
+
     }
 }

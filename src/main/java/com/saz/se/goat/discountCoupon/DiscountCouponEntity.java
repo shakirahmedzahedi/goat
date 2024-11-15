@@ -33,8 +33,8 @@ public class DiscountCouponEntity
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id") // This adds a foreign key in the Product table
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private UserEntity couponCreator;
 
     public DiscountCouponEntity(long discountAmmount, UserEntity couponCreator)

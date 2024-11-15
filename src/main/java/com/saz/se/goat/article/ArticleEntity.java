@@ -21,7 +21,7 @@ public class ArticleEntity {
     @JoinColumn(name = "cart_id")
     private CartEntity cartEntity;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     private ProductEntity product;
 

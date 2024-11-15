@@ -2,6 +2,7 @@ package com.saz.se.goat.user;
 
 import com.saz.se.goat.article.ArticleEntity;
 import com.saz.se.goat.article.ArticleRequest;
+import com.saz.se.goat.cart.CartDTO;
 import com.saz.se.goat.model.ErrorModel;
 import com.saz.se.goat.model.ResponseWrapper;
 import com.saz.se.goat.utils.HeaderProperties;
@@ -26,17 +27,71 @@ public class UserController
 
 
     @CrossOrigin
+    @GetMapping("/feachActiveCartsByUser")
+    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
+    public ResponseEntity<?> feachActiveCartsByUser (@RequestParam long userId, @RequestHeader HttpHeaders header)
+    {
+        HeaderProperties headerProperties = new HeaderProperties(header);
+        ResponseWrapper <Optional<CartDTO>> response = new ResponseWrapper<>();
+        Optional<CartDTO> cartDTO = userService.feachActiveCartsByUser(userId);
+
+        if (cartDTO.isPresent())
+        {
+            response.setData(cartDTO);
+
+        }
+
+        return jsonUtils.responseAsJsonWithToken(response, headerProperties.getEmail());
+    }
+
+    @CrossOrigin
     @PostMapping("/addToCart")
     @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
     public ResponseEntity<?> addToCart (@RequestBody ArticleRequest article, @RequestHeader HttpHeaders header)
     {
         HeaderProperties headerProperties = new HeaderProperties(header);
-        ResponseWrapper<Optional<UserDTO>> response = new ResponseWrapper<>();
-        Optional<UserDTO> userDTO = userService.addToCart(article);
+        ResponseWrapper <Optional<CartDTO>> response = new ResponseWrapper<>();
+        Optional<CartDTO> cartDTO = userService.addToCart(article);
 
-        if (userDTO.isPresent())
+        if (cartDTO.isPresent())
         {
-            response.setData(userDTO);
+            response.setData(cartDTO);
+
+        }
+
+        return jsonUtils.responseAsJsonWithToken(response, headerProperties.getEmail());
+    }
+
+    @CrossOrigin
+    @PostMapping("/removeFromCart")
+    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
+    public ResponseEntity<?> removeFromCart (@RequestBody ArticleRequest article, @RequestHeader HttpHeaders header)
+    {
+        HeaderProperties headerProperties = new HeaderProperties(header);
+        ResponseWrapper <Optional<CartDTO>> response = new ResponseWrapper<>();
+        Optional<CartDTO> cartDTO = userService.removeFromCart(article);
+
+        if (cartDTO.isPresent())
+        {
+            response.setData(cartDTO);
+
+        }
+
+        return jsonUtils.responseAsJsonWithToken(response, headerProperties.getEmail());
+    }
+
+    @CrossOrigin
+    @PostMapping("/deleteArticle")
+    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
+    public ResponseEntity<?> deleteArticle (@RequestBody ArticleRequest request , @RequestHeader HttpHeaders header)
+    {
+        HeaderProperties headerProperties = new HeaderProperties(header);
+        ResponseWrapper <Optional<CartDTO>> response = new ResponseWrapper<>();
+        Optional<CartDTO> cartDTO = userService.deleteArticle(request);
+
+        if (cartDTO.isPresent())
+        {
+            response.setData(cartDTO);
 
         }
 

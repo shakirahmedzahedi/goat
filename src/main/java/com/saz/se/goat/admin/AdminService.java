@@ -133,12 +133,19 @@ public class AdminService
 
     }
 
-    public DiscountCouponDTO addNewCoupon(DiscountCouponRequest request)
+    public Optional<DiscountCouponDTO> addNewCoupon(DiscountCouponRequest request)
     {
         UserEntity user = repo.getReferenceById(request.getUserId());
         DiscountCouponEntity discountCouponEntity = new DiscountCouponEntity(request.getDiscountAmount(), user);
         discountCouponRepository.save(discountCouponEntity);
 
-        return commonDTO.toDiscountCouponDTO(discountCouponEntity);
+        return Optional.ofNullable(commonDTO.toDiscountCouponDTO(discountCouponEntity));
+    }
+
+    public List<Optional<DiscountCouponDTO>> getAllCoupons() {
+        List<DiscountCouponEntity> couponDTOList = discountCouponRepository.findAll();
+        return  couponDTOList.stream()
+                .map(entity -> Optional.ofNullable(commonDTO.toDiscountCouponDTO(entity)))
+                .collect(Collectors.toList());
     }
 }

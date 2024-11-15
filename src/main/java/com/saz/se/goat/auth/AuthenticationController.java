@@ -7,10 +7,13 @@ import com.saz.se.goat.requestModel.SignUpRequest;
 import com.saz.se.goat.user.UserDTO;
 import com.saz.se.goat.utils.JsonUtils;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -45,15 +48,20 @@ public class AuthenticationController {
         }
         else
         {
-            response.addError(new ErrorModel("14464", "Authentication fail"));
+            response.addError(new ErrorModel("14464", "Invalid User name or Password"));
+            return jsonUtils.responseAsJson(response);
         }
         return jsonUtils.responseAsJsonWithToken(response,request.getEmail());
     }
 
     @CrossOrigin
     @GetMapping("/confirmEmail")
-    public ResponseEntity<?> activeAccount(@RequestParam String token, @RequestHeader HttpHeaders header) {
-        ResponseWrapper response = authenticationService.activeAccount(token);
-        return jsonUtils.responseAsJson(response);
+    public void activeAccount(@RequestParam String token, @RequestHeader HttpHeaders header, HttpServletResponse response) throws IOException {
+        ResponseWrapper responseWrapper = authenticationService.activeAccount(token);
+        if (responseWrapper.getErrors().size() < 1) {
+            response.sendRedirect("http://localhost:3000/signIn?status=activated");
+        } else {
+            response.sendRedirect("https://localhost:3000/signIn?status=activation_failed");
+        }
     }
 }

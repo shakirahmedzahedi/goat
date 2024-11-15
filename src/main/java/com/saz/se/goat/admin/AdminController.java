@@ -158,9 +158,25 @@ public class AdminController
     public ResponseEntity<?> addNewCoupon(@RequestBody DiscountCouponRequest request, @RequestHeader HttpHeaders header)
     {
         HeaderProperties headerProperties = new HeaderProperties(header);
-        ResponseWrapper<DiscountCouponDTO> response = new ResponseWrapper<>();
-        DiscountCouponDTO discountCouponDTO = adminService.addNewCoupon(request);
-        response.setData(discountCouponDTO);
+        ResponseWrapper<Optional<DiscountCouponDTO>> response = new ResponseWrapper<>();
+        Optional<DiscountCouponDTO> discountCouponDTO = adminService.addNewCoupon(request);
+        if (discountCouponDTO.isPresent())
+        {
+            response.setData(discountCouponDTO);
+        }
+        return jsonUtils.responseAsJsonWithToken(response,headerProperties.getEmail());
+    }
+
+    @CrossOrigin
+    @GetMapping("/discountCoupon/getAll")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<?> getAllCoupons( @RequestHeader HttpHeaders header)
+    {
+        HeaderProperties headerProperties = new HeaderProperties(header);
+        ResponseWrapper<List<Optional<DiscountCouponDTO>>> response = new ResponseWrapper<>();
+        List<Optional<DiscountCouponDTO>> discountCouponDTOs = adminService.getAllCoupons();
+        response.setData(discountCouponDTOs);
+
         return jsonUtils.responseAsJsonWithToken(response,headerProperties.getEmail());
     }
 
