@@ -4,7 +4,7 @@ public enum OrderStatus
 {
 
     DELIVERED,
-    PANDING,
+    PENDING,
     REVIEW,
     OUT_FOR_DELIVERY
 

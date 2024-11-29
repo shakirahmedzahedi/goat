@@ -184,8 +184,20 @@ public class OrderEntity {
 
     public long calculateTotalAmount()
     {
-        long sum = cartEntity.getArticles().stream()
+        /*long sum = cartEntity.getArticles().stream()
                 .mapToLong(article -> article.getProduct().getPrice() * article.getUnit())
+                .sum();
+*/
+        long sum = cartEntity.getArticles().stream()
+                .mapToLong(article -> {
+                    long price = article.getProduct().getPrice();
+                    int unit = article.getUnit();
+                    double discountPercentage = article.getProduct().getDiscountPercentage();
+                    double discountedPrice = (discountPercentage > 0)
+                            ? price * unit * (1 - (discountPercentage / 100.0)) // Apply discount
+                            : price * unit; // No discount
+                    return Math.round(discountedPrice);
+                })
                 .sum();
 
         if(discountCoupon != null)

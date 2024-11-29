@@ -23,7 +23,7 @@ public class DiscountCouponService
     public DiscountCouponDTO getCoupon(String couponNumber)
     {
         DiscountCouponEntity discountCouponEntity = discountCouponRepository.findByNumber(couponNumber)
-                .orElseThrow(() -> new EntityNotFoundException("Coupon not found"));
+                .orElse(null);
         return commonDTO.toDiscountCouponDTO(discountCouponEntity);
     }
 }

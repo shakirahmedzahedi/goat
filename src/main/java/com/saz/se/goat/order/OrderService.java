@@ -15,6 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Service
 public class OrderService
@@ -59,6 +62,11 @@ public class OrderService
         user.getOrderEntityList().add(order);
         user.setInitialDiscount(false);
         cart.setActive(false);
+        if (discountCoupon != null)
+        {
+            discountCoupon.setAlreadyUsed(true);
+            discountCouponRepository.save(discountCoupon);
+        }
         cartRepository.save(cart);
         userRepository.save(user);
 
@@ -73,4 +81,13 @@ public class OrderService
         return commonDTO.toOrderDTO(orderEntity);
     }
 
+
+    public List<OrderDTO> getOrderByUser(long id)
+    {
+
+        List<OrderEntity> orderEntityList = orderRepository.findAllOrdersByUser(id);
+        return  orderEntityList.stream()
+                .map(commonDTO::toOrderDTO)
+                .collect(Collectors.toList());
+    }
 }

@@ -4,6 +4,7 @@ import com.saz.se.goat.model.Address;
 import com.saz.se.goat.cart.CartEntity;
 import com.saz.se.goat.model.Role;
 import com.saz.se.goat.order.OrderEntity;
+import com.saz.se.goat.product.ProductEntity;
 import com.saz.se.goat.utils.RoleListConverter;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
@@ -47,6 +48,13 @@ public class UserEntity
     List<OrderEntity> orderEntityList = new ArrayList<>();
     @OneToMany(mappedBy = "userEntity",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<CartEntity> cartEntityList = new ArrayList<>();
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_product",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id")
+    )
+    List<ProductEntity> favorites = new ArrayList<>();
 
     public UserEntity() {}
 
@@ -69,6 +77,7 @@ public class UserEntity
         this.address = address;
         this.cartEntityList = new ArrayList<>();
         this.orderEntityList = new ArrayList<>();
+        this.favorites = new ArrayList<>();
     }
 
     public long getId() {
@@ -163,6 +172,14 @@ public class UserEntity
         return cartEntityList;
     }
 
+    public List<ProductEntity> getFavorites() {
+        return favorites;
+    }
+
+    public void setFavorites(List<ProductEntity> favorites) {
+        this.favorites = favorites;
+    }
+
     public void setCartEntityList(List<CartEntity> cartEntityList) {
         this.cartEntityList = cartEntityList;
     }
@@ -176,6 +193,16 @@ public class UserEntity
         orderEntity.setUserEntity(this);
     }
 
+    public void addToFavorite(ProductEntity product)
+    {
+        favorites.add(product);
+    }
+
+    public void removeFromFavorite(ProductEntity product)
+    {
+        favorites.remove(product);
+    }
+
     @Override
     public String toString() {
         return "UserEntity{" +
@@ -183,7 +210,6 @@ public class UserEntity
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
                 ", phoneNo='" + phoneNo + '\'' +
                 ", roles=" + roles +
                 ", active=" + active +
@@ -191,6 +217,7 @@ public class UserEntity
                 ", address=" + address +
                 ", orderEntityList=" + orderEntityList +
                 ", cartEntityList=" + cartEntityList +
+                ", favorites=" + favorites +
                 '}';
     }
 }

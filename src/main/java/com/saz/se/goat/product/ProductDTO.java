@@ -24,5 +24,6 @@ public class ProductDTO
     private String size;
     private long weight;
     private String thumbnail;
+    private boolean bestSeller;
 
 }

@@ -46,6 +46,9 @@ public class CommonDTO {
                         .collect(Collectors.toList()),
                 userEntity.getCartEntityList().stream()
                         .map(this::toCartDTO)
+                        .collect(Collectors.toList()),
+                userEntity.getFavorites().stream()
+                        .map(this::toProductDTO)
                         .collect(Collectors.toList()));
 
     }
@@ -67,7 +70,8 @@ public class CommonDTO {
                 productEntity.getBrand(),
                 productEntity.getSize(),
                 productEntity.getWeight(),
-                productEntity.getThumbnail());
+                productEntity.getThumbnail(),
+                productEntity.isBestSeller());
 
     }
 
@@ -88,7 +92,8 @@ public class CommonDTO {
                 articleEntity.getProduct().getBrand(),
                 articleEntity.getProduct().getSize(),
                 articleEntity.getProduct().getWeight(),
-                articleEntity.getProduct().getThumbnail());
+                articleEntity.getProduct().getThumbnail(),
+                articleEntity.getProduct().isBestSeller());
 
 
 
@@ -187,24 +192,32 @@ public class CommonDTO {
 
     public DiscountCouponDTO toDiscountCouponDTO(DiscountCouponEntity discountCouponEntity)
     {
-        UserDTO userDTO = new UserDTO (
-                discountCouponEntity.getCouponCreator().getId(),
-                discountCouponEntity.getCouponCreator().getFirstName(),
-                discountCouponEntity.getCouponCreator().getLastName(),
-                discountCouponEntity.getCouponCreator().getEmail(),
-                discountCouponEntity.getCouponCreator().getPhoneNo(),
-                discountCouponEntity.getCouponCreator().getRoles(),
-                discountCouponEntity.getCouponCreator().isActive(),
-                discountCouponEntity.getCouponCreator().isInitialDiscount());
+        if (discountCouponEntity != null)
+        {
+            UserDTO userDTO = new UserDTO (
+                    discountCouponEntity.getCouponCreator().getId(),
+                    discountCouponEntity.getCouponCreator().getFirstName(),
+                    discountCouponEntity.getCouponCreator().getLastName(),
+                    discountCouponEntity.getCouponCreator().getEmail(),
+                    discountCouponEntity.getCouponCreator().getPhoneNo(),
+                    discountCouponEntity.getCouponCreator().getRoles(),
+                    discountCouponEntity.getCouponCreator().isActive(),
+                    discountCouponEntity.getCouponCreator().isInitialDiscount());
 
-        return new DiscountCouponDTO(
-                discountCouponEntity.getId(),
-                discountCouponEntity.getNumber(),
-                discountCouponEntity.getDiscountAmmount(),
-                discountCouponEntity.isAlreadyUsed(),
-                discountCouponEntity.getCreatedAt(),
-                discountCouponEntity.getUpdatedAt(),
-                userDTO);
+            return new DiscountCouponDTO(
+                    discountCouponEntity.getId(),
+                    discountCouponEntity.getNumber(),
+                    discountCouponEntity.getDiscountAmmount(),
+                    discountCouponEntity.isAlreadyUsed(),
+                    discountCouponEntity.getCreatedAt(),
+                    discountCouponEntity.getUpdatedAt(),
+                    userDTO);
+
+        }
+        else
+        {
+            return null;
+        }
     }
 
     public AddressDTO addressDTO(Address address)

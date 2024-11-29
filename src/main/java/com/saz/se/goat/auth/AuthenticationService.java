@@ -2,6 +2,7 @@ package com.saz.se.goat.auth;
 
 import com.saz.se.goat.model.ErrorModel;
 import com.saz.se.goat.model.ResponseWrapper;
+import com.saz.se.goat.requestModel.ForgetPasswordRequest;
 import com.saz.se.goat.requestModel.SignInRequest;
 import com.saz.se.goat.requestModel.SignUpRequest;
 import com.saz.se.goat.response.UserResponse;
@@ -24,6 +25,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class AuthenticationService {
@@ -75,7 +78,7 @@ public class AuthenticationService {
             response.addError(new ErrorModel("14462", "Could not send Email"));
 
         }
-        emailService.sendConfirmationEmail(user);
+        //emailService.sendConfirmationEmail(user);
 
         return response;
 
@@ -141,9 +144,43 @@ public class AuthenticationService {
         return  null;
     }
 
-    public static UserResponse parseUser (UserEntity req)
+
+    public ResponseWrapper forgetPassword(ForgetPasswordRequest forgetPasswordRequest)
     {
-        return new UserResponse(req.getId(),req.getFirstName(), req.getLastName(), req.getEmail(), req.getPhoneNo(),
-                req.getRoles(), req.isActive(), req.isInitialDiscount(), req.getAddress());
+        ResponseWrapper<String> response = new ResponseWrapper<>();
+        Optional<UserEntity> userEntity = userRepository.findByEmail(forgetPasswordRequest.getEmail());
+
+        if (userEntity.isPresent())
+        {
+           userEntity.get().setPassword( encoder.encode(forgetPasswordRequest.getPassword()));
+           userRepository.save(userEntity.get());
+           response.setData("Successfully Reset the password.");
+        }
+        else
+        {
+            response.addError(new ErrorModel("14462", "Your are not Register User!"));
+        }
+
+        return  response;
     }
+
+    public ResponseWrapper<String> sendEmailForRestPassword(String email) throws MessagingException
+    {
+        ResponseWrapper<String> response = new ResponseWrapper<>();
+        Optional<UserEntity> userEntity = userRepository.findByEmail(email);
+
+        if (userEntity.isPresent())
+        {
+           emailService.sendForgetPasswordEmail(userEntity.get());
+           response.setData("Check you email to Reset the password");
+        }
+        else
+        {
+            response.addError(new ErrorModel("14462", "Your are not Register User!"));
+        }
+
+        return  response;
+
+    }
+
 }

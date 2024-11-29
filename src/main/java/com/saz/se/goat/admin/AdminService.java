@@ -12,6 +12,7 @@ import com.saz.se.goat.product.ProductRepository;
 import com.saz.se.goat.requestModel.DiscountCouponRequest;
 import com.saz.se.goat.requestModel.OrderUpdateRequest;
 import com.saz.se.goat.requestModel.ProductRequest;
+import com.saz.se.goat.requestModel.UpdateProductRequest;
 import com.saz.se.goat.user.UserDTO;
 import com.saz.se.goat.user.UserEntity;
 import com.saz.se.goat.user.UserRepository;
@@ -49,24 +50,15 @@ public class AdminService
         return Optional.of(product);
     }
 
-    public Optional<ProductEntity> updateProductById(long id, ProductRequest request)
+    public Optional<ProductEntity> updateProductById(long id, UpdateProductRequest request)
     {
         ProductEntity product = productRepository.getReferenceById(id);
-        product.setTitle(request.getTitle());
-        product.setBrand(request.getBrand());
-        product.setDescription(request.getDescription());
-        product.setAdditionalInfo(product.getAdditionalInfo());
         product.setDiscountPercentage(request.getDiscountPercentage());
-        product.setCategory(request.getCategory().name());
         product.setStock(request.getStock());
-        product.setSize(request.getSize());
-        product.setExtraInfo(request.getExtraInfo());
-        product.setTags(request.getTags().name());
         product.setPrice(request.getPrice());
         product.setThumbnail(request.getThumbnail());
-        product.setWeight(request.getWeight());
         product.setRating(request.getRating());
-
+        product.setBestSeller(request.isBestSeller());
         productRepository.save(product);
 
         return Optional.of(product);

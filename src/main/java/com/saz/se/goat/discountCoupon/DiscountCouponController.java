@@ -1,5 +1,6 @@
 package com.saz.se.goat.discountCoupon;
 
+import com.saz.se.goat.model.ErrorModel;
 import com.saz.se.goat.model.ResponseWrapper;
 import com.saz.se.goat.requestModel.DiscountCouponRequest;
 import com.saz.se.goat.utils.HeaderProperties;
@@ -31,7 +32,14 @@ public class DiscountCouponController
         HeaderProperties headerProperties = new HeaderProperties(header);
         ResponseWrapper<DiscountCouponDTO> response = new ResponseWrapper<>();
         DiscountCouponDTO discountCouponDTO = discountCouponService.getCoupon(couponNumber);
-        response.setData(discountCouponDTO);
+        if ( discountCouponDTO == null)
+        {
+            response.getErrors().add(new ErrorModel("6789","Invalid Coupon"));
+        }
+        else
+        {
+            response.setData(discountCouponDTO);
+        }
 
         return jsonUtils.responseAsJsonWithToken(response, headerProperties.getEmail());
     }

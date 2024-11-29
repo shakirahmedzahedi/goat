@@ -2,6 +2,7 @@ package com.saz.se.goat.auth;
 
 import com.saz.se.goat.model.ErrorModel;
 import com.saz.se.goat.model.ResponseWrapper;
+import com.saz.se.goat.requestModel.ForgetPasswordRequest;
 import com.saz.se.goat.requestModel.SignInRequest;
 import com.saz.se.goat.requestModel.SignUpRequest;
 import com.saz.se.goat.user.UserDTO;
@@ -63,5 +64,22 @@ public class AuthenticationController {
         } else {
             response.sendRedirect("https://localhost:3000/signIn?status=activation_failed");
         }
+    }
+
+    @CrossOrigin
+    @PostMapping("/forgetPassword")
+    public ResponseEntity<?> forgetPassword(@RequestBody ForgetPasswordRequest forgetPasswordRequest, @RequestHeader HttpHeaders header) throws IOException
+    {
+        ResponseWrapper<String> response = authenticationService.forgetPassword(forgetPasswordRequest);
+        return jsonUtils.responseAsJson(response);
+
+    }
+
+    @CrossOrigin
+    @GetMapping("/sendEmailForRestPassword")
+    public ResponseEntity<?> sendEmailForRestPassword(@RequestParam String email, @RequestHeader HttpHeaders header) throws IOException, MessagingException {
+        ResponseWrapper<String> response = authenticationService.sendEmailForRestPassword(email);
+        return jsonUtils.responseAsJson(response);
+
     }
 }

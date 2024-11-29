@@ -5,6 +5,8 @@ import com.saz.se.goat.article.ArticleRequest;
 import com.saz.se.goat.cart.CartDTO;
 import com.saz.se.goat.model.ErrorModel;
 import com.saz.se.goat.model.ResponseWrapper;
+import com.saz.se.goat.requestModel.FavoriteRequest;
+import com.saz.se.goat.requestModel.UpdateAddressRequest;
 import com.saz.se.goat.utils.HeaderProperties;
 import com.saz.se.goat.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +47,24 @@ public class UserController
     }
 
     @CrossOrigin
+    @GetMapping("/fetchUser")
+    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
+    public ResponseEntity<?> fetchUser (@RequestParam long userId, @RequestHeader HttpHeaders header)
+    {
+        HeaderProperties headerProperties = new HeaderProperties(header);
+        ResponseWrapper <Optional<UserDTO>> response = new ResponseWrapper<>();
+        Optional<UserDTO> userDTO = userService.fetchUser(userId);
+
+        if (userDTO.isPresent())
+        {
+            response.setData(userDTO);
+
+        }
+
+        return jsonUtils.responseAsJsonWithToken(response, headerProperties.getEmail());
+    }
+
+    @CrossOrigin
     @PostMapping("/addToCart")
     @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
     public ResponseEntity<?> addToCart (@RequestBody ArticleRequest article, @RequestHeader HttpHeaders header)
@@ -56,6 +76,42 @@ public class UserController
         if (cartDTO.isPresent())
         {
             response.setData(cartDTO);
+
+        }
+
+        return jsonUtils.responseAsJsonWithToken(response, headerProperties.getEmail());
+    }
+
+    @CrossOrigin
+    @PostMapping("/addToFavorite")
+    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
+    public ResponseEntity<?> addToFavorite (@RequestBody FavoriteRequest request, @RequestHeader HttpHeaders header)
+    {
+        HeaderProperties headerProperties = new HeaderProperties(header);
+        ResponseWrapper <Optional<UserDTO>> response = new ResponseWrapper<>();
+        Optional<UserDTO> userDTO = userService.addToFavorite(request);
+
+        if (userDTO.isPresent())
+        {
+            response.setData(userDTO);
+
+        }
+
+        return jsonUtils.responseAsJsonWithToken(response, headerProperties.getEmail());
+    }
+
+    @CrossOrigin
+    @PostMapping("/removeFromFavorite")
+    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
+    public ResponseEntity<?> removeFromFavorite (@RequestBody FavoriteRequest request, @RequestHeader HttpHeaders header)
+    {
+        HeaderProperties headerProperties = new HeaderProperties(header);
+        ResponseWrapper <Optional<UserDTO>> response = new ResponseWrapper<>();
+        Optional<UserDTO> userDTO = userService.removeFromFavorite(request);
+
+        if (userDTO.isPresent())
+        {
+            response.setData(userDTO);
 
         }
 
@@ -94,6 +150,21 @@ public class UserController
             response.setData(cartDTO);
 
         }
+
+        return jsonUtils.responseAsJsonWithToken(response, headerProperties.getEmail());
+    }
+
+    @CrossOrigin
+    @PatchMapping("/updateAddress")
+    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
+    public ResponseEntity<?> updateAddress (@RequestBody UpdateAddressRequest updateAddressRequest, @RequestHeader HttpHeaders header)
+    {
+        HeaderProperties headerProperties = new HeaderProperties(header);
+        ResponseWrapper <UserDTO> response = new ResponseWrapper<>();
+        UserDTO userDTO = userService.updateAddress(updateAddressRequest);
+
+        response.setData(userDTO);
+
 
         return jsonUtils.responseAsJsonWithToken(response, headerProperties.getEmail());
     }

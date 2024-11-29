@@ -7,6 +7,7 @@ import com.saz.se.goat.model.AddressDTO;
 import com.saz.se.goat.model.Role;
 import com.saz.se.goat.order.OrderDTO;
 import com.saz.se.goat.order.OrderEntity;
+import com.saz.se.goat.product.ProductDTO;
 import com.saz.se.goat.utils.RoleListConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,7 @@ public class UserDTO
     private AddressDTO address;
     private List<OrderDTO> orders;
     private List<CartDTO> carts;
+    private List<ProductDTO> favorites;
 
     public UserDTO(long id, String firstName, String lastName, String email, String phoneNo,
                    List<Role> roles, boolean active, boolean initialDiscount, AddressDTO addressDTO) {

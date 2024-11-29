@@ -34,7 +34,7 @@ public class OrderController
         ResponseWrapper<OrderDTO> response = new ResponseWrapper<>();
         OrderDTO orderDTO = orderService.createOrder(request);
         response.setData(orderDTO);
-        return jsonUtils.responseAsJson(response);
+        return jsonUtils.responseAsJsonWithToken(response, headerProperties.getEmail());
     }
 
     @CrossOrigin
@@ -46,7 +46,19 @@ public class OrderController
         ResponseWrapper<OrderDTO> response = new ResponseWrapper<>();
         OrderDTO orderDTO = orderService.getOrderById(id);
         response.setData(orderDTO);
-        return jsonUtils.responseAsJson(response);
+        return jsonUtils.responseAsJsonWithToken(response, headerProperties.getEmail());
+    }
+
+    @CrossOrigin
+    @GetMapping("/getOrdersByUser/{id}")
+    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
+    public ResponseEntity<?> getOrderByUser(@RequestParam long id, @RequestHeader HttpHeaders header)
+    {
+        HeaderProperties headerProperties = new HeaderProperties(header);
+        ResponseWrapper<List<OrderDTO>> response = new ResponseWrapper<>();
+        List<OrderDTO> orderDTOs = orderService.getOrderByUser(id);
+        response.setData(orderDTOs);
+        return jsonUtils.responseAsJsonWithToken(response, headerProperties.getEmail());
     }
 
 }

@@ -9,6 +9,7 @@ import com.saz.se.goat.product.ProductService;
 import com.saz.se.goat.requestModel.DiscountCouponRequest;
 import com.saz.se.goat.requestModel.OrderUpdateRequest;
 import com.saz.se.goat.requestModel.ProductRequest;
+import com.saz.se.goat.requestModel.UpdateProductRequest;
 import com.saz.se.goat.user.UserDTO;
 import com.saz.se.goat.utils.CommonDTO;
 import com.saz.se.goat.utils.HeaderProperties;
@@ -49,9 +50,9 @@ public class AdminController
     }
 
     @CrossOrigin
-    @PostMapping("/product/updateProduct/{id}")
+    @PatchMapping("/product/updateProduct/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> updateProductById(@RequestParam long id, @RequestBody ProductRequest request, @RequestHeader HttpHeaders header)
+    public ResponseEntity<?> updateProductById(@RequestParam long id, @RequestBody UpdateProductRequest request, @RequestHeader HttpHeaders header)
     {
         HeaderProperties headerProperties = new HeaderProperties(header);
         ResponseWrapper<ProductDTO> response = new ResponseWrapper<>();

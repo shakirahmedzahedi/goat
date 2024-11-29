@@ -1,11 +1,12 @@
 package com.saz.se.goat.product;
 
+import com.saz.se.goat.user.UserEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
+import java.util.ArrayList;
+import java.util.List;
 
-import java.util.UUID;
 
 @Entity
 @NoArgsConstructor
@@ -66,6 +67,10 @@ public class ProductEntity {
 
     private String thumbnail;
 
+    private boolean bestSeller;
+    @ManyToMany(mappedBy = "favorites", fetch = FetchType.LAZY)
+    private List<UserEntity> users = new ArrayList<>();
+
     public ProductEntity(String title, String description, String additionalInfo, String extraInfo, String category,
                          long price, long discountPercentage, long rating, int stock, String tags, String brand,
                          String size, long weight, String thumbnail)
@@ -84,6 +89,7 @@ public class ProductEntity {
         this.size = size;
         this.weight = weight;
         this.thumbnail = thumbnail;
+        this.bestSeller = false;
     }
 
     public String getAdditionalInfo() {
@@ -204,6 +210,22 @@ public class ProductEntity {
 
     public void setThumbnail(String thumbnail) {
         this.thumbnail = thumbnail;
+    }
+
+    public boolean isBestSeller() {
+        return bestSeller;
+    }
+
+    public void setBestSeller(boolean bestSeller) {
+        this.bestSeller = bestSeller;
+    }
+
+    public List<UserEntity> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<UserEntity> users) {
+        this.users = users;
     }
 
     @Override

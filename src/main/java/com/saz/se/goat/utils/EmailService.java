@@ -49,8 +49,43 @@ public class EmailService {
         javaMailSender.send(message);
     }
 
+    public void sendForgetPasswordEmail(UserEntity user) throws MessagingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setTo(user.getEmail());
+        helper.setSubject("Reset Your Password - HENAMEDMARKT ");
+        helper.setText(/*"<html>" +
+                        "<body>" +
+                        "<h2>Dear "+ user.getLastName() + ",</h2>"
+                        + "<br/> We're excited to have you get started. " +
+                        "Please click on below link to confirm your account."
+                        + "<br/> "  + generateConfirmationLink(user.getEmail())+"" +
+                        "<br/> Regards,<br/>" +
+                        "MFA Registration team" +
+                        "</body>" +
+                        "</html>"*/
+
+                "<html>\n" +
+                        "   <body>\n" +
+                        "       <h1>Welcome!</h1>\n" +
+                        "       <h2>Reset Your Password</h2>\n" +
+                        "<br/> "  + generateResetPasswordLink(user.getEmail())+"" +
+                        "       <p>If you don’t use this link within 30 minutes, it will expire.</p>\n" +
+                        "       <p>Thanks,<br>HenaMedMarkt Team</p>\n" +
+                        "   </body>\n" +
+                        "</html>"
+                , true);
+
+        javaMailSender.send(message);
+    }
     private String generateConfirmationLink(String email){
         String token = jwtService.generateToken(email);
         return "<a href=http://localhost:8080/api/v1/auth/confirmEmail?token="+token+"><button style='background-color: #28a745; color: white; border: none; padding: 10px 20px; font-size: 16px;'>Active Account</button></a>";
+    }
+
+    private String generateResetPasswordLink(String email){
+        String token = jwtService.generateToken(email);
+        return "<a href=http://localhost:3000/forgetPassword?email="+email+"><button style='background-color: #28a745; color: white; border: none; padding: 10px 20px; font-size: 16px;'>Password Reset</button></a>";
     }
 }

@@ -2,9 +2,7 @@ package com.saz.se.goat.model;
 
 public enum Category
 {
-    BABY,
-    MOTHER,
-    OTHER,
-    KIDS,
-    NEW
+    BABY_AND_KIDS,
+    FAMILY_AND_MOM,
+    NEW_ARRIVAL
 }

@@ -9,11 +9,14 @@ import com.saz.se.goat.cart.CartRepository;
 import com.saz.se.goat.model.*;
 import com.saz.se.goat.product.ProductEntity;
 import com.saz.se.goat.product.ProductRepository;
+import com.saz.se.goat.requestModel.FavoriteRequest;
+import com.saz.se.goat.requestModel.UpdateAddressRequest;
 import com.saz.se.goat.response.UserResponse;
 import com.saz.se.goat.utils.CommonDTO;
 import com.saz.se.goat.utils.JWTService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.method.P;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.saz.se.goat.auth.AuthenticationService.parseUser;
+
 
 @Service
 public class UserService {
@@ -229,10 +232,70 @@ public class UserService {
         UserEntity user = repo.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
+       /* CartEntity cart = cartRepository.findActiveCartByUserId(user.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Cart not found"));*/
         CartEntity cart = cartRepository.findActiveCartByUserId(user.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Cart not found"));
+                .orElse(null);
 
         return Optional.ofNullable(commonDTO.toCartDTO(cart));
 
+    }
+
+    public UserDTO updateAddress(UpdateAddressRequest request)
+    {
+        UserEntity user = repo.findById(request.getUserId())
+                .orElse(null);
+        Address address = new Address(request.getApartmentNo(), request.getHouseNo(), request.getPostCode(), request.getPostOffice(), request.getCity());
+
+        user.setAddress(address);
+        repo.save(user);
+
+        return commonDTO.toUserDTO(user);
+
+    }
+
+    public Optional<UserDTO> addToFavorite(FavoriteRequest request)
+    {
+        Optional<UserEntity> optionalUser = repo.findById(request.getUserId());
+        Optional<ProductEntity> optionalProduct = productRepository.findById(request.getProductId());
+
+        if (optionalUser.isPresent() && optionalProduct.isPresent())
+        {
+            UserEntity user = optionalUser.get();
+            ProductEntity product = optionalProduct.get();
+
+            user.addToFavorite(product);
+            repo.save(user);
+            return Optional.ofNullable(commonDTO.toUserDTO(user));
+        }
+        return null;
+    }
+
+    public Optional<UserDTO> removeFromFavorite(FavoriteRequest request)
+    {
+        Optional<UserEntity> optionalUser = repo.findById(request.getUserId());
+        Optional<ProductEntity> optionalProduct = productRepository.findById(request.getProductId());
+
+        if (optionalUser.isPresent() && optionalProduct.isPresent())
+        {
+            UserEntity user = optionalUser.get();
+            ProductEntity product = optionalProduct.get();
+
+            user.removeFromFavorite(product);
+            repo.save(user);
+            return Optional.ofNullable(commonDTO.toUserDTO(user));
+        }
+        return null;
+    }
+
+    public Optional<UserDTO> fetchUser(long userId)
+    {
+        Optional<UserEntity> optionalUser = repo.findById(userId);
+        if (optionalUser.isPresent() )
+        {
+            UserEntity user = optionalUser.get();
+            return Optional.ofNullable(commonDTO.toUserDTO(user));
+        }
+        return null;
     }
 }
