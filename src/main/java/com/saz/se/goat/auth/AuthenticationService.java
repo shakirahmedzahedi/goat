@@ -25,6 +25,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -48,6 +49,7 @@ public class AuthenticationService {
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
+    @Transactional
     public ResponseWrapper<String> signup(SignUpRequest request) throws MessagingException {
 
         ResponseWrapper<String> response = new ResponseWrapper<>();
@@ -59,17 +61,17 @@ public class AuthenticationService {
             return response;
         }
 
-        UserEntity user = new UserEntity (
-                request.getFirstName(),
-                request.getLastName(),
-                request.getEmail(),
-                encoder.encode(request.getPassword()),
-                request.getPhoneNo(),
-                request.getAddress());
-
-        userRepository.save(user);
         try
         {
+            UserEntity user = new UserEntity (
+                    request.getFirstName(),
+                    request.getLastName(),
+                    request.getEmail(),
+                    encoder.encode(request.getPassword()),
+                    request.getPhoneNo(),
+                    request.getAddress());
+
+            userRepository.save(user);
             emailService.sendConfirmationEmail(user);
             response.setData("User registered. Please check your email for verification.");
         }

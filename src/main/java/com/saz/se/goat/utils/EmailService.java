@@ -18,23 +18,20 @@ public class EmailService {
        @Value("${spring.mail.username}")
        private String sender;
 
+    @Value("${app.base.url}")
+    private String baseUrl;
+
+    @Value("${app.backend.url}")
+    private String backendUrl;
+
     public void sendConfirmationEmail(UserEntity user) throws MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
 
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setFrom(sender);
         helper.setTo(user.getEmail());
         helper.setSubject("Confirm your E-Mail - HENAMEDMARKT Registration");
-        helper.setText(/*"<html>" +
-                        "<body>" +
-                        "<h2>Dear "+ user.getLastName() + ",</h2>"
-                        + "<br/> We're excited to have you get started. " +
-                        "Please click on below link to confirm your account."
-                        + "<br/> "  + generateConfirmationLink(user.getEmail())+"" +
-                        "<br/> Regards,<br/>" +
-                        "MFA Registration team" +
-                        "</body>" +
-                        "</html>"*/
-
+        helper.setText(
                 "<html>\n" +
                         "   <body>\n" +
                         "       <h1>Welcome!</h1>\n" +
@@ -55,17 +52,7 @@ public class EmailService {
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
         helper.setTo(user.getEmail());
         helper.setSubject("Reset Your Password - HENAMEDMARKT ");
-        helper.setText(/*"<html>" +
-                        "<body>" +
-                        "<h2>Dear "+ user.getLastName() + ",</h2>"
-                        + "<br/> We're excited to have you get started. " +
-                        "Please click on below link to confirm your account."
-                        + "<br/> "  + generateConfirmationLink(user.getEmail())+"" +
-                        "<br/> Regards,<br/>" +
-                        "MFA Registration team" +
-                        "</body>" +
-                        "</html>"*/
-
+        helper.setText(
                 "<html>\n" +
                         "   <body>\n" +
                         "       <h1>Welcome!</h1>\n" +
@@ -81,11 +68,11 @@ public class EmailService {
     }
     private String generateConfirmationLink(String email){
         String token = jwtService.generateToken(email);
-        return "<a href=http://localhost:8080/api/v1/auth/confirmEmail?token="+token+"><button style='background-color: #28a745; color: white; border: none; padding: 10px 20px; font-size: 16px;'>Active Account</button></a>";
+        return "<a href="+backendUrl+"/api/v1/auth/confirmEmail?token="+token+"><button style='background-color: #28a745; color: white; border: none; padding: 10px 20px; font-size: 16px;'>Active Account</button></a>";
     }
 
     private String generateResetPasswordLink(String email){
         String token = jwtService.generateToken(email);
-        return "<a href=http://localhost:3000/forgetPassword?email="+email+"><button style='background-color: #28a745; color: white; border: none; padding: 10px 20px; font-size: 16px;'>Password Reset</button></a>";
+        return "<a href="+baseUrl+"/forgetPassword?email="+email+"><button style='background-color: #28a745; color: white; border: none; padding: 10px 20px; font-size: 16px;'>Password Reset</button></a>";
     }
 }
