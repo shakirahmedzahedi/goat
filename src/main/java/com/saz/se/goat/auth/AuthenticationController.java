@@ -24,8 +24,8 @@ public class AuthenticationController {
     @Autowired
     JsonUtils jsonUtils;
 
-    @Value("${app.backend.url}")
-    private String backendUrl;
+    @Value("${app.base.url}")
+    private String baseUrl;
 
     private final AuthenticationService authenticationService;
 
@@ -64,9 +64,9 @@ public class AuthenticationController {
     public void activeAccount(@RequestParam String token, @RequestHeader HttpHeaders header, HttpServletResponse response) throws IOException {
         ResponseWrapper responseWrapper = authenticationService.activeAccount(token);
         if (responseWrapper.getErrors().size() < 1) {
-            response.sendRedirect(backendUrl+"/signIn?status=activated");
+            response.sendRedirect(baseUrl+"/signIn?status=activated");
         } else {
-            response.sendRedirect(backendUrl+"/signIn?status=activation_failed");
+            response.sendRedirect(baseUrl+"/signIn?status=activation_failed");
         }
     }
 
