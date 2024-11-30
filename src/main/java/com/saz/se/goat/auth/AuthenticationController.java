@@ -10,6 +10,7 @@ import com.saz.se.goat.utils.JsonUtils;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,9 @@ public class AuthenticationController {
 
     @Autowired
     JsonUtils jsonUtils;
+
+    @Value("${app.backend.url}")
+    private String backendUrl;
 
     private final AuthenticationService authenticationService;
 
@@ -60,9 +64,9 @@ public class AuthenticationController {
     public void activeAccount(@RequestParam String token, @RequestHeader HttpHeaders header, HttpServletResponse response) throws IOException {
         ResponseWrapper responseWrapper = authenticationService.activeAccount(token);
         if (responseWrapper.getErrors().size() < 1) {
-            response.sendRedirect("http://localhost:3000/signIn?status=activated");
+            response.sendRedirect(backendUrl+"/signIn?status=activated");
         } else {
-            response.sendRedirect("https://localhost:3000/signIn?status=activation_failed");
+            response.sendRedirect(backendUrl+"/signIn?status=activation_failed");
         }
     }
 
