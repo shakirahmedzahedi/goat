@@ -50,6 +50,7 @@ public class EmailService {
         MimeMessage message = javaMailSender.createMimeMessage();
 
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setFrom(sender);
         helper.setTo(user.getEmail());
         helper.setSubject("Reset Your Password - HENAMEDMARKT ");
         helper.setText(
