@@ -1,4 +1,4 @@
-FROM openjdk:21-jdk-slim as builder
+FROM openjdk:17-jdk-slim as builder
 
 WORKDIR /app
 
@@ -11,7 +11,7 @@ COPY src ./src
 
 RUN ./mvnw clean package
 
-FROM openjdk:21-jdk-slim
+FROM openjdk:17-jdk-slim
 
 WORKDIR /app
 
