@@ -149,6 +149,7 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
 
+
         CartEntity cart = cartRepository.findActiveCartByUserId(user.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Cart not found"));
 
