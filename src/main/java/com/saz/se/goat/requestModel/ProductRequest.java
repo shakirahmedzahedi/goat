@@ -19,7 +19,7 @@ public class ProductRequest {
     private String additionalInfo;
     private String extraInfo;
     private Category category;
-    private long price;
+    private long price;//this is price
     private long discountPercentage;
     private long rating;
     private int stock;
