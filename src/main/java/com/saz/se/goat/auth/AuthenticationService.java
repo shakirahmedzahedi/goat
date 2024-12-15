@@ -185,4 +185,20 @@ public class AuthenticationService {
 
     }
 
+    public ResponseWrapper<UserDTO>  renewToken(String email)
+    {
+        ResponseWrapper<UserDTO> response = new ResponseWrapper<>();
+        Optional<UserEntity> userEntity = userRepository.findByEmail(email);
+        if (userEntity.isPresent())
+        {
+           UserDTO userDTO = userEntity.map(commonDTO::toUserDTO).orElse(null);
+           response.setData(userDTO);
+        }
+        else
+        {
+            response.addError(new ErrorModel("14462", "Your are not Register User!"));
+        }
+
+        return  response;
+    }
 }

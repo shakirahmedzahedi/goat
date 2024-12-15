@@ -71,7 +71,8 @@ public class CommonDTO {
                 productEntity.getSize(),
                 productEntity.getWeight(),
                 productEntity.getThumbnail(),
-                productEntity.isBestSeller());
+                productEntity.isBestSeller(),
+                productEntity.isActive());
 
     }
 
@@ -93,7 +94,8 @@ public class CommonDTO {
                 articleEntity.getProduct().getSize(),
                 articleEntity.getProduct().getWeight(),
                 articleEntity.getProduct().getThumbnail(),
-                articleEntity.getProduct().isBestSeller());
+                articleEntity.getProduct().isBestSeller(),
+                articleEntity.getProduct().isActive());
 
 
 

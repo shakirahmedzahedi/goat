@@ -72,7 +72,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("https://henamedmarkt.com")); // Allow requests from frontend origin
+        configuration.setAllowedOrigins(List.of("https://www.henamedmarkt.com", "http://localhost:3000")); // Allow requests from frontend origin
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")); // Allow methods
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "email", "X-Requested-With")); // Allow specific headers
         configuration.setAllowCredentials(true); // Allow credentials (cookies, authorization headers, etc.)

@@ -86,4 +86,12 @@ public class AuthenticationController {
         return jsonUtils.responseAsJson(response);
 
     }
+    @CrossOrigin
+    @GetMapping("/renewToken")
+    public ResponseEntity<?> renewToken(@RequestParam String email, @RequestHeader HttpHeaders header) throws IOException, MessagingException {
+        ResponseWrapper<UserDTO> response = new ResponseWrapper<>();
+        response = authenticationService.renewToken(email);
+        return jsonUtils.responseAsJsonWithToken(response,email);
+
+    }
 }

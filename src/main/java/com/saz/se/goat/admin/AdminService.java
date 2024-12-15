@@ -65,9 +65,11 @@ public class AdminService
     }
 
     public Optional<ProductEntity> deleteProductById(long id) {
-        productRepository.deleteById(id);
+        ProductEntity product = productRepository.getReferenceById(id);
+        product.setActive(false);
+        productRepository.save(product);
 
-        return Optional.empty();
+        return Optional.of(product);
     }
 
     public Optional<UserDTO> addRoleByUserId(long id, String role)

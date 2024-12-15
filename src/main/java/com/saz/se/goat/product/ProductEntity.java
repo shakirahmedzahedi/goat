@@ -68,6 +68,8 @@ public class ProductEntity {
     private String thumbnail;
 
     private boolean bestSeller;
+
+    private boolean active;
     @ManyToMany(mappedBy = "favorites", fetch = FetchType.LAZY)
     private List<UserEntity> users = new ArrayList<>();
 
@@ -90,6 +92,7 @@ public class ProductEntity {
         this.weight = weight;
         this.thumbnail = thumbnail;
         this.bestSeller = false;
+        this.active = true;
     }
 
     public String getAdditionalInfo() {
@@ -226,6 +229,14 @@ public class ProductEntity {
 
     public void setUsers(List<UserEntity> users) {
         this.users = users;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     @Override

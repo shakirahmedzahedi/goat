@@ -23,7 +23,7 @@ public class ProductService
 
     public List<ProductEntity> getAllProducts()
     {
-        List<ProductEntity> productList = productRepository.findAll();
+        List<ProductEntity> productList = productRepository.findByActiveTrue();
 
         return productList;
     }
